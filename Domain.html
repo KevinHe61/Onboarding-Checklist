@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入职清单 - 邮件发送后台</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .desc {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        #emailList {
+            height: 180px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        button {
+            padding: 14px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            flex: 1;
+            font-weight: bold;
+        }
+        .btn-save {
+            background: #3498db;
+            color: white;
+        }
+        .btn-send {
+            background: #2ecc71;
+            color: white;
+        }
+        .link-box {
+            padding: 15px;
+            background: #eef7ff;
+            border-radius: 8px;
+            word-break: break-all;
+            color: #333;
+            margin-top: 15px;
+        }
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+            margin-top: 20px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📩 入职清单 - 邮件发送后台</h1>
+        <p class="desc">自定义邮件内容，一键发送给所有候选人</p>
+
+        <!-- 发件人邮箱 -->
+        <div class="form-group">
+            <label>📧 发件人邮箱（自定义）</label>
+            <input type="email" id="senderEmail" placeholder="例如：hr@company.com">
+        </div>
+
+        <!-- 邮件标题 -->
+        <div class="form-group">
+            <label>📌 邮件标题</label>
+            <input type="text" id="emailTitle" value="请完成入职前准备工作｜Onboarding Checklist">
+        </div>
+
+        <!-- 候选人邮箱列表 -->
+        <div class="form-group">
+            <label>👥 候选人邮箱（一行一个）</label>
+            <textarea id="emailList" placeholder="abc@company.com
+123@example.com"></textarea>
+        </div>
+
+        <!-- 邮件内容 -->
+        <div class="form-group">
+            <label>✍️ 邮件内容</label>
+            <textarea id="emailContent">您好！
+
+请打开以下链接完成入职准备：
+{{URL}}
+
+请按要求准备好材料，谢谢！</textarea>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-save" onclick="saveAll()">💾 保存全部设置</button>
+            <button class="btn-send" onclick="sendToAll()">📤 发送入职清单</button>
+        </div>
+
+        <div class="link-box">
+            <strong>入职清单链接：</strong><br>
+            https://kevinhe61.github.io/Onboarding-Checklist/Onboarding
+        </div>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        // 固定链接
+        const ONBOARD_URL = "https://kevinhe61.github.io/Onboarding-Checklist/Onboarding";
+
+        // 保存所有配置
+        function saveAll() {
+            const data = {
+                sender: document.getElementById("senderEmail").value,
+                title: document.getElementById("emailTitle").value,
+                emails: document.getElementById("emailList").value,
+                content: document.getElementById("emailContent").value
+            };
+            localStorage.setItem("onboardAdmin", JSON.stringify(data));
+            
+            const status = document.getElementById("status");
+            status.textContent = "✅ 全部设置已保存！刷新页面不会丢失";
+            status.className = "status success";
+        }
+
+        // 加载保存的配置
+        window.onload = function() {
+            const saved = localStorage.getItem("onboardAdmin");
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById("senderEmail").value = data.sender || "";
+                document.getElementById("emailTitle").value = data.title || "";
+                document.getElementById("emailList").value = data.emails || "";
+                document.getElementById("emailContent").value = data.content || "";
+            }
+        };
+
+        // 发送邮件
+        function sendToAll() {
+            const sender = document.getElementById("senderEmail").value;
+            const title = document.getElementById("emailTitle").value;
+            const content = document.getElementById("emailContent").value;
+            const emails = document.getElementById("emailList").value
+                .split(/\n/)
+                .map(e => e.trim())
+                .filter(e => e.includes('@'));
+
+            if (emails.length === 0) {
+                alert("请输入候选人邮箱！");
+                return;
+            }
+
+            // 替换链接
+            let body = content.replace(/{{URL}}/g, ONBOARD_URL);
+
+            // 拼接邮件
+            const mailto = `mailto:${emails.join(',')}?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+            window.open(mailto);
+
+            const status = document.getElementById("status");
+            status.textContent = `📤 已打开邮件编辑器 | 共 ${emails.length} 人`;
+            status.className = "status success";
+        }
+    </script>
+</body>
