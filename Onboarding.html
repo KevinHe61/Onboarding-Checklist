@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 适配手机屏幕，保证扫码打开后正常显示 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新员工入职准备清单</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .tips {
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .task-item.completed {
+            background-color: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        .task-text {
+            font-size: 16px;
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        .complete-btn {
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .complete-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .task-item.completed .complete-btn {
+            background-color: #4caf50;
+            cursor: default;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #95a5a6;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">新员工入职准备清单</h1>
+        <p class="tips">亲爱的新同事：<br>请您完成以下准备工作，每项完成后点击右侧【完成】按钮</p>
+
+        <!-- 任务1 -->
+        <div class="task-item" id="task1">
+            <span class="task-text">1. 准备3寸彩色照片</span>
+            <button class="complete-btn" onclick="completeTask(1)">未完成</button>
+        </div>
+
+        <!-- 任务2 -->
+        <div class="task-item" id="task2">
+            <span class="task-text">2. 携带学位证、毕业证原件</span>
+            <button class="complete-btn" onclick="completeTask(2)">未完成</button>
+        </div>
+
+        <!-- 任务3 -->
+        <div class="task-item" id="task3">
+            <span class="task-text">3. 携带银行卡</span>
+            <button class="complete-btn" onclick="completeTask(3)">未完成</button>
+        </div>
+
+        <div class="footer">
+            祝您入职顺利！
+        </div>
+    </div>
+
+    <script>
+        // 标记任务完成功能
+        function completeTask(taskId) {
+            const taskItem = document.getElementById(`task${taskId}`);
+            const btn = taskItem.querySelector('.complete-btn');
+            
+            // 切换完成状态
+            taskItem.classList.add('completed');
+            btn.textContent = '已完成';
+            btn.disabled = true; // 完成后禁用按钮
+        }
+    </script>
+</body>
+</html>
